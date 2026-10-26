@@ -1,4 +1,4 @@
-import { SceneCanvas } from '../twin/SceneCanvas';
+import { SceneCanvas } from '@/twin/SceneCanvas';
 
 export function App() {
   return <SceneCanvas />;

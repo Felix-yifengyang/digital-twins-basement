@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { OrbitControls, useGLTF } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
-import { sceneConfig } from '../project/scene';
+import { sceneConfig } from '@/project/scene';
 
 function Model() {
   const { scene } = useGLTF(sceneConfig.modelUrl);
