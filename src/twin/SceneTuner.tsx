@@ -22,7 +22,7 @@ export default function SceneTuner({ light, onChange }: Props) {
     position: { label: '主光位置', value: [...sceneConfig.lighting.position] as [number, number, number], step: 0.1 },
     fov: { label: '相机视野', value: sceneConfig.camera.fov, min: 15, max: 100, step: 1 },
     helpers: { label: '灯光辅助线', value: true },
-    '复制配置（含当前视角）': button(async () => {
+    '复制配置': button(async () => {
       const controls = get().controls;
       if (!controls || !('target' in controls) || !(controls.target instanceof Vector3)) return;
       const roundPosition = (position: readonly number[]) => position.map((value) => Math.round(value * 10) / 10);
@@ -58,10 +58,11 @@ export default function SceneTuner({ light, onChange }: Props) {
       intensity: values.intensity,
       color: values.color,
       position: values.position,
-      fov: values.fov,
     });
+  }, [onChange, values.background, values.ambientIntensity, values.intensity, values.color, values.position]);
+  useEffect(() => {
     camera.fov = values.fov;
     camera.updateProjectionMatrix();
-  }, [camera, onChange, values.background, values.ambientIntensity, values.intensity, values.color, values.position, values.fov]);
+  }, [camera, values.fov]);
   return null;
 }
