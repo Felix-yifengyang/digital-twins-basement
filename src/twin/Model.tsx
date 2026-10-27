@@ -1,12 +1,13 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Fragment, type ReactNode, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Html } from '@react-three/drei';
+import type { Group } from 'three';
 import type { GLTF } from 'three/addons/loaders/GLTFLoader.js';
 import { createModelLoader, type ModelLease } from '@/twin/modelResources';
 
-type Props = { url: string; maxIdle?: number };
+type Props = { url: string; maxIdle?: number; children?: (scene: Group) => ReactNode };
 type Display = { model: GLTF; lease: ModelLease };
 
-export function Model({ url, maxIdle = 1 }: Props) {
+export function Model({ url, maxIdle = 1, children }: Props) {
   const [resources] = useState(() => createModelLoader(maxIdle));
   const [display, setDisplay] = useState<Display>();
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
@@ -51,7 +52,11 @@ export function Model({ url, maxIdle = 1 }: Props) {
 
   return (
     <>
-      {display && <primitive object={display.model.scene} />}
+      {display && (
+        <Fragment key={display.model.scene.uuid}>
+          {children ? children(display.model.scene) : <primitive object={display.model.scene} />}
+        </Fragment>
+      )}
       {status !== 'ready' && (
         <Html center>
           <div role="status" style={{ color: 'white', background: '#202428', padding: 12, whiteSpace: 'nowrap' }}>

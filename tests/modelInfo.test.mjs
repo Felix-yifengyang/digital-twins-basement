@@ -1,0 +1,23 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import ts from 'typescript';
+import { Group, Mesh, BoxGeometry, MeshStandardMaterial } from 'three';
+const source = await readFile('src/twin/leva/getModelInfo.ts', 'utf8');
+const code = ts.transpile(source, { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 })
+  .replace(/from ["']([^"']+)["']/g, (_, path) => `from '${import.meta.resolve(path)}'`);
+const { getModelInfo } = await import(`data:text/javascript;base64,${Buffer.from(code).toString('base64')}`);
+const parent = new Group(); parent.name = '设备'; parent.position.set(10, 0, 0);
+const material = new MeshStandardMaterial({ color: '#123456', metalness: 0.7 });
+const mesh = new Mesh(new BoxGeometry(), [material]); mesh.name = '外壳'; mesh.position.set(1, 2, 3);
+mesh.userData = { deviceId: 'pump01' }; parent.add(mesh);
+const info = getModelInfo(mesh);
+assert.equal(info.对象.名称, '外壳');
+assert.ok(info.对象.层级路径.includes('设备 [Group] / 外壳 [Mesh]'));
+assert.equal(info.变换.世界位置, '11, 2, 3');
+assert.equal(info.几何体.三角形数, '12');
+assert.equal(info['材质槽 0'].color, '#123456');
+assert.equal(info.自定义数据, undefined);
+assert.equal(getModelInfo(parent).几何体, undefined);
+mesh.userData.loop = mesh.userData;
+assert.equal(getModelInfo(mesh).自定义数据, undefined);
+console.log('Model info: hierarchy, world transform, geometry, materials and userData exclusion passed');
