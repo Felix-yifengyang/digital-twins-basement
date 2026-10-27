@@ -1,8 +1,12 @@
 export const sceneConfig = {
-  modelUrl: `${import.meta.env.BASE_URL}models/demo-pump.glb`,
-  camera: {
-    position: [8, 5.5, 9] as const,
-    fov: 42,
+  modelPath: 'models/demo-pump.glb',
+  camera: { position: [8, 5.5, 9], fov: 42 },
+  controlsTarget: [0, 1, 0],
+  background: '#0d1112',
+  lighting: {
+    ambientIntensity: 0.8,
+    intensity: 2.5,
+    color: '#ffffff',
+    position: [7, 11, 6],
   },
-  controlsTarget: [0, 1, 0] as const,
 } as const;
