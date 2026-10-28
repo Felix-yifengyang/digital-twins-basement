@@ -44,7 +44,7 @@ export default function SceneControls({ light, onChange }: Props) {
         window.prompt('复制配置，替换 src/project/scene.ts：', text);
       }
     }),
-  }), { order: 0 });
+  }), { order: 0, collapsed: false });
   useHelper(values.helpers ? light : false, DirectionalLightHelper, 1, '#ffff00');
   useEffect(() => {
     onChange({

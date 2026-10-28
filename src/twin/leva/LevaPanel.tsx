@@ -1,27 +1,25 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Leva } from 'leva';
 import ModelInfoControls from '@/twin/leva/ModelInfoControls';
 import type { ModelDetails } from '@/twin/leva/getModelInfo';
+import '@/twin/leva/panel.css';
 
 type Props = {
   details: ModelDetails | null;
 };
 
 export default function LevaPanel({ details }: Props) {
-  const [collapsed, setCollapsed] = useState(true);
-
-  useEffect(() => {
-    // Expand after mounting so Leva measures the registered controls again.
-    const frame = requestAnimationFrame(() => setCollapsed(false));
-    return () => cancelAnimationFrame(frame);
-  }, []);
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
     <>
-      <Leva
-        titleBar={{ title: '场景工具' }}
-        collapsed={{ collapsed, onChange: setCollapsed }}
-      />
+      <div className="leva-panel" data-expanded={!collapsed}>
+        <Leva
+          fill
+          titleBar={{ title: '场景工具', drag: false }}
+          collapsed={{ collapsed, onChange: setCollapsed }}
+        />
+      </div>
       <ModelInfoControls details={details} />
     </>
   );
