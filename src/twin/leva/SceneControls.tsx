@@ -3,26 +3,27 @@ import { useThree } from '@react-three/fiber';
 import { useHelper } from '@react-three/drei';
 import { button, useControls } from 'leva';
 import { DirectionalLightHelper, PerspectiveCamera, Vector3, type DirectionalLight } from 'three';
-import { sceneConfig } from '@/project/scene';
+import type { SceneSettings } from '@/twin/sceneSettings';
 import { getSceneControls } from '@/twin/leva/getSceneControls';
 import type { SceneValues } from '@/twin/SceneCanvas';
 
 type Props = {
+  settings: SceneSettings;
   light: RefObject<DirectionalLight>;
   onChange: (values: SceneValues) => void;
 };
 
-export default function SceneControls({ light, onChange }: Props) {
+export default function SceneControls({ light, onChange, settings }: Props) {
   const camera = useThree((state) => state.camera) as PerspectiveCamera;
   const get = useThree((state) => state.get);
-  const [values, , read] = useControls('场景调参', () => ({
-    ...getSceneControls(),
+  const [values, set, read] = useControls('场景调参', () => ({
+    ...getSceneControls(settings),
     '复制配置': button(async () => {
       const controls = get().controls;
       if (!controls || !('target' in controls) || !(controls.target instanceof Vector3)) return;
       const roundPosition = (position: readonly number[]) => position.map((value) => Math.round(value * 10) / 10);
       const config = {
-        ...sceneConfig,
+        modelPath: settings.modelPath,
         camera: {
           position: roundPosition(camera.position.toArray()),
           target: roundPosition(controls.target.toArray()),
@@ -44,10 +45,13 @@ export default function SceneControls({ light, onChange }: Props) {
       try {
         await navigator.clipboard.writeText(text);
       } catch {
-        window.prompt('复制配置，替换 src/project/scene.ts：', text);
+        window.prompt('复制配置，替换当前场景的 config：', text);
       }
     }),
-  }), { order: 0, collapsed: false });
+  }), { order: 0, collapsed: false }, [settings]);
+  useEffect(() => {
+    set({ background: settings.background, ...settings.lighting, fov: settings.camera.fov, helpers: true });
+  }, [settings, set]);
   useHelper(values.helpers ? light : false, DirectionalLightHelper, 1, '#ffff00');
   useEffect(() => {
     onChange({

@@ -1,12 +1,12 @@
-import { useRef, useState, type ReactNode, type RefObject } from 'react';
+import { useMemo, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { Bounds, OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { DirectionalLight, type Group } from 'three';
-import { sceneSettings } from '@/twin/sceneSettings';
+import type { SceneConfig } from '@/project/scene';
+import { resolveSceneConfig, type SceneSettings } from '@/twin/sceneSettings';
 import { ModelBounds } from '@/twin/ModelBounds';
 import { Model } from '@/twin/Model';
-
-const modelUrl = `${import.meta.env.BASE_URL}${sceneSettings.modelPath}`;
+import type { ModelCacheInfo } from '@/twin/modelResources';
 
 export type SceneValues = {
   background: string;
@@ -16,38 +16,59 @@ export type SceneValues = {
   position: [number, number, number];
 };
 
-type Props = {
-  modelUrl?: string;
-  renderModel?: (scene: Group) => ReactNode;
-  children?: (scene: {
-    light: RefObject<DirectionalLight>;
-    onChange: (values: SceneValues) => void;
-  }) => ReactNode;
+type Tools = {
+  getCacheInfo: () => ModelCacheInfo;
+  light: RefObject<DirectionalLight>;
+  onChange: (values: SceneValues) => void;
+  settings: SceneSettings;
 };
 
-export function SceneCanvas({ children, renderModel, modelUrl: url = modelUrl }: Props) {
+type Props = {
+  config: SceneConfig;
+  renderModel?: (scene: Group) => ReactNode;
+  children?: (scene: Tools) => ReactNode;
+};
+
+function SceneContent({ model, settings, getCacheInfo, renderModel, children }: {
+  getCacheInfo: () => ModelCacheInfo;
+  model: Group;
+  settings: SceneSettings;
+} & Omit<Props, 'config'>) {
   const [values, setValues] = useState<SceneValues>({
-    background: sceneSettings.background,
-    ...sceneSettings.lighting,
-    position: [...sceneSettings.lighting.position],
+    background: settings.background,
+    ...settings.lighting,
   });
   const light = useRef<DirectionalLight>(null!);
+
   return (
-    <Canvas camera={sceneSettings.camera}>
+    <>
       <color attach="background" args={[values.background]} />
       <ambientLight intensity={values.ambientIntensity} />
       <directionalLight ref={light} intensity={values.intensity} color={values.color} position={values.position} />
+      <OrbitControls makeDefault />
       <Bounds margin={1.2} maxDuration={0}>
-        <Model url={url}>
-          {(model) => (
-            <ModelBounds model={model} autoFit={!sceneSettings.customView || url !== modelUrl}>
-              {renderModel ? renderModel(model) : <primitive object={model} />}
-            </ModelBounds>
-          )}
-        </Model>
+        <ModelBounds model={model} settings={settings}>
+          {renderModel ? renderModel(model) : <primitive object={model} />}
+        </ModelBounds>
       </Bounds>
-      <OrbitControls makeDefault target={sceneSettings.target} />
-      {children?.({ light, onChange: setValues })}
+      {children?.({ light, onChange: setValues, settings, getCacheInfo })}
+    </>
+  );
+}
+
+export function SceneCanvas({ config, renderModel, children }: Props) {
+  const settings = useMemo(() => resolveSceneConfig(config), [config]);
+  const url = new URL(settings.modelPath, new URL(import.meta.env.BASE_URL, window.location.href)).href;
+
+  return (
+    <Canvas camera={{ position: [8, 5.5, 9], fov: 42 }}>
+      <Model url={url} context={settings}>
+        {(model, loadedSettings, getCacheInfo) => (
+          <SceneContent key={`${model.uuid}:${loadedSettings.modelPath}`} model={model} settings={loadedSettings} getCacheInfo={getCacheInfo} renderModel={renderModel}>
+            {children}
+          </SceneContent>
+        )}
+      </Model>
     </Canvas>
   );
 }

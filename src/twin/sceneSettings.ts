@@ -1,4 +1,4 @@
-import { sceneConfig, type SceneConfig } from '@/project/scene';
+import type { SceneConfig } from '@/project/scene';
 
 export function resolveSceneConfig(config: SceneConfig) {
   const { position, target } = config.camera ?? {};
@@ -23,4 +23,4 @@ export function resolveSceneConfig(config: SceneConfig) {
   };
 }
 
-export const sceneSettings = resolveSceneConfig(sceneConfig);
+export type SceneSettings = ReturnType<typeof resolveSceneConfig>;

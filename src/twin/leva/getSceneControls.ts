@@ -1,6 +1,6 @@
-import { sceneSettings } from '@/twin/sceneSettings';
+import type { SceneSettings } from '@/twin/sceneSettings';
 
-export function getSceneControls() {
+export function getSceneControls(sceneSettings: SceneSettings) {
   return {
     background: { label: '背景', value: sceneSettings.background },
     ambientIntensity: {

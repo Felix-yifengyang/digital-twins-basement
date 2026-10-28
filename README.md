@@ -34,10 +34,10 @@ public/
 
 ## 模型切换与资源
 
-`SceneCanvas` 接收可选的 `modelUrl`，不传时加载 `scene.ts` 中的默认模型。项目切换厂房或生产线时，只更新地址，Canvas 保持挂载：
+`SceneCanvas` 接收场景 `config`，项目切换厂房或生产线时更新配置，Canvas 保持挂载：
 
 ```tsx
-<SceneCanvas modelUrl={`${import.meta.env.BASE_URL}models/workshop.glb`} />
+<SceneCanvas config={{ modelPath: 'models/workshop.glb' }} />
 ```
 
 `Model` 独立管理加载和资源生命周期，不使用 `useGLTF` 全局缓存：
@@ -88,4 +88,22 @@ node tests/modelInfo.test.mjs
 
 Leva 使用合并后的参数初始化；复制配置读取实际相机位置和观察目标，输出 camera.position、camera.target。将结果替换 scene.ts 的 sceneConfig 声明即可，保留顶部 SceneConfig 类型定义。没有自动写入源码文件。
 
-换成其他 modelUrl 时自动取景，避免沿用默认 GLB 的保存视角。自动取景在模型挂载时执行，不因普通参数更新反复重置。
+各场景使用自己的保存视角，没有完整视角则自动取景。普通参数更新不会反复重置视角。
+
+## 多场景切换
+
+在 `project/scenes.ts` 中维护场景列表，每项包含唯一 id、显示名称和 config。默认条目复用 `scene.ts` 模板；增加厂房或生产线时增加条目并填写对应 GLB 路径即可。列表包含泵站与方块示例，可直接验证两个不同 GLB 的切换。
+
+App 左上角下拉框选择场景。SceneCanvas 接收 config，复用同一个 Canvas 和模型缓存。新模型就绪后才应用对应灯光、背景、视角和 Leva 参数；失败保留旧场景并可重试。切换到新的显示内容时清除选中信息。每个场景填写完整视角则恢复，否则 Bounds 自动取景。
+
+Leva 的复制配置导出当前已显示场景，保存到列表中对应的 config。切换不会自动保存临时调参；需要保留时请先复制。场景下拉框是应用层入口，可替换为客户导航或路由。
+
+Model 负责同一加载器内的有限缓存和资源释放。
+
+方块模型来源：[Khronos glTF Sample Assets / Box](https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/Box)，文件为 public/models/box.glb。
+
+鸭子模型来源：[Khronos glTF Sample Assets / Duck](https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/Duck)，文件为 public/models/duck.glb。可按泵站 → 方块 → 鸭子的顺序切换，触发默认历史缓存淘汰。
+
+## 性能信息
+
+Leva 的性能信息分组每 500ms 读取 renderer.info，显示几何体、纹理、着色器程序数量，以及最近一帧的绘制调用和三角形数；这些是数量，不是显存字节数。模型缓存列出加载中、使用中和历史缓存条目。泵站 → 方块 → 鸭子切换后，泵站应退出缓存；多次循环后计数应趋于稳定，不要求归零。PerformanceInfoControls 可从 App 独立移除，资源管理不依赖它。

@@ -2,18 +2,19 @@ import { Fragment, type ReactNode, useEffect, useLayoutEffect, useRef, useState 
 import { Html } from '@react-three/drei';
 import type { Group } from 'three';
 import type { GLTF } from 'three/addons/loaders/GLTFLoader.js';
-import { createModelLoader, type ModelLease } from '@/twin/modelResources';
+import { createModelLoader, type ModelLease, type ModelCacheInfo } from '@/twin/modelResources';
 
-type Props = { url: string; maxIdle?: number; children?: (scene: Group) => ReactNode };
-type Display = { model: GLTF; lease: ModelLease };
+type Props<T> = { url: string; context: T; maxIdle?: number; children?: (scene: Group, context: T, getCacheInfo: () => ModelCacheInfo) => ReactNode };
+type Display<T> = { model: GLTF; lease: ModelLease; context: T; version: number };
 
-export function Model({ url, maxIdle = 1, children }: Props) {
+export function Model<T>({ url, context, maxIdle = 1, children }: Props<T>) {
   const [resources] = useState(() => createModelLoader(maxIdle));
-  const [display, setDisplay] = useState<Display>();
+  const [display, setDisplay] = useState<Display<T>>();
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [attempt, setAttempt] = useState(0);
-  const visible = useRef<Display | undefined>(undefined);
+  const visible = useRef<Display<T> | undefined>(undefined);
   const generation = useRef(0);
+  const version = useRef(0);
 
   useEffect(() => {
     const version = ++generation.current;
@@ -31,7 +32,7 @@ export function Model({ url, maxIdle = 1, children }: Props) {
     lease.promise.then((model) => {
       if (!active) return;
       adopted = true;
-      setDisplay({ model, lease });
+      setDisplay({ model, lease, context, version: ++version.current });
       setStatus('ready');
     }, (error: unknown) => {
       if (!active) return;
@@ -42,7 +43,7 @@ export function Model({ url, maxIdle = 1, children }: Props) {
       active = false;
       if (!adopted) lease.release();
     };
-  }, [resources, url, attempt]);
+  }, [resources, url, context, attempt]);
 
   useLayoutEffect(() => {
     const previous = visible.current;
@@ -53,8 +54,8 @@ export function Model({ url, maxIdle = 1, children }: Props) {
   return (
     <>
       {display && (
-        <Fragment key={display.model.scene.uuid}>
-          {children ? children(display.model.scene) : <primitive object={display.model.scene} />}
+        <Fragment key={display.version}>
+          {children ? children(display.model.scene, display.context, resources.getInfo) : <primitive object={display.model.scene} />}
         </Fragment>
       )}
       {status !== 'ready' && (

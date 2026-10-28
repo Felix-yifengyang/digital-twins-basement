@@ -5,6 +5,7 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 
 type Resource = BufferGeometry | Material | Texture | Skeleton;
 type Entry = { promise: Promise<GLTF>; users: number; model?: GLTF; resources?: Set<Resource> };
+export type ModelCacheInfo = { url: string; status: 'loading' | 'active' | 'cached' }[];
 export type ModelLease = { promise: Promise<GLTF>; release: () => void };
 
 function collectResources(model: GLTF) {
@@ -68,6 +69,12 @@ export function createModelResources(
   }
 
   return {
+    getInfo(): ModelCacheInfo {
+      return [...entries].map(([url, entry]) => ({
+        url,
+        status: !entry.model ? 'loading' : entry.users > 0 ? 'active' : 'cached',
+      }));
+    },
     acquire(url: string): ModelLease {
       if (closed) throw new Error('Model resource owner has been disposed');
       let entry = entries.get(url);
@@ -132,6 +139,7 @@ export function createModelLoader(maxIdle = 1) {
   }, maxIdle);
   return {
     acquire: resources.acquire,
+    getInfo: resources.getInfo,
     dispose() {
       closed = true;
       resources.dispose();
