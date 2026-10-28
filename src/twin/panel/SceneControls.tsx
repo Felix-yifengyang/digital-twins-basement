@@ -3,8 +3,8 @@ import { useThree } from '@react-three/fiber';
 import { useHelper } from '@react-three/drei';
 import { button, useControls } from 'leva';
 import { DirectionalLightHelper, PerspectiveCamera, Vector3, type DirectionalLight } from 'three';
-import type { SceneSettings } from '@/twin/sceneSettings';
-import { getSceneControls } from '@/twin/leva/getSceneControls';
+import type { SceneSettings } from '@/twin/scene/sceneSettings';
+import { getSceneControls } from '@/twin/panel/getSceneControls';
 import type { SceneValues } from '@/twin/SceneCanvas';
 
 type Props = {

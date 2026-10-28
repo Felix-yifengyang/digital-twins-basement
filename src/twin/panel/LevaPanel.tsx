@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Leva } from 'leva';
-import ModelInfoControls from '@/twin/leva/ModelInfoControls';
-import type { ModelDetails } from '@/twin/leva/getModelInfo';
-import '@/twin/leva/panel.css';
+import ModelInfoControls from '@/twin/panel/ModelInfoControls';
+import type { ModelDetails } from '@/twin/panel/getModelInfo';
+import '@/twin/panel/panel.css';
 
 type Props = {
   details: ModelDetails | null;

@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import type { SceneConfig } from '@/project/scene';
-import '@/twin/sceneSwitcher.css';
+import '@/twin/scene/sceneSwitcher.css';
 
 export type SceneOption = {
   id: string;

@@ -3,10 +3,10 @@ import { Bounds, OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { DirectionalLight, type Group } from 'three';
 import type { SceneConfig } from '@/project/scene';
-import { resolveSceneConfig, type SceneSettings } from '@/twin/sceneSettings';
-import { ModelBounds } from '@/twin/ModelBounds';
-import { Model } from '@/twin/Model';
-import type { ModelCacheInfo } from '@/twin/modelResources';
+import { resolveSceneConfig, type SceneSettings } from '@/twin/scene/sceneSettings';
+import { ModelBounds } from '@/twin/scene/ModelBounds';
+import { Model } from '@/twin/model/Model';
+import type { ModelCacheInfo } from '@/twin/model/modelResources';
 
 export type SceneValues = {
   background: string;

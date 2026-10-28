@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useThree } from '@react-three/fiber';
 import { LevaInputs, useControls } from 'leva';
-import type { ModelCacheInfo } from '@/twin/modelResources';
-import { getPerformanceInfo } from '@/twin/leva/getPerformanceInfo';
+import type { ModelCacheInfo } from '@/twin/model/modelResources';
+import { getPerformanceInfo } from '@/twin/panel/getPerformanceInfo';
 
 type Props = {
   getCacheInfo: () => ModelCacheInfo;

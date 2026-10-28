@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import ts from 'typescript';
-const source = await readFile('src/twin/leva/getPerformanceInfo.ts', 'utf8');
+const source = await readFile('src/twin/panel/getPerformanceInfo.ts', 'utf8');
 const code = ts.transpile(source, { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 });
 const { getPerformanceInfo } = await import(`data:text/javascript;base64,${Buffer.from(code).toString('base64')}`);
 const renderer = { info: { memory: { geometries: 20, textures: 2 }, programs: [{}], render: { calls: 8, triangles: 120 } } };

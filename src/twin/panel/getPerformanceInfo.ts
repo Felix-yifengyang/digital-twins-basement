@@ -1,5 +1,5 @@
 import type { WebGLRenderer } from 'three';
-import type { ModelCacheInfo } from '@/twin/modelResources';
+import type { ModelCacheInfo } from '@/twin/model/modelResources';
 
 export function getPerformanceInfo(renderer: WebGLRenderer, cache: ModelCacheInfo) {
   const statuses = { loading: '加载中', active: '使用中', cached: '历史缓存' };

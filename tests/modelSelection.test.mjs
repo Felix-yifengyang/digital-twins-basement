@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import ts from 'typescript';
 import { Group, Mesh, BoxGeometry, MeshStandardMaterial, Texture } from 'three';
-const source = await readFile('src/twin/ModelSelection.tsx', 'utf8');
+const source = await readFile('src/twin/selection/ModelSelection.tsx', 'utf8');
 const code = ts.transpile(source, { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX })
   .replace(/from ["']([^"']+)["']/g, (_, path) => `from '${import.meta.resolve(path)}'`);
 const { highlightObject } = await import(`data:text/javascript;base64,${Buffer.from(code).toString('base64')}`);

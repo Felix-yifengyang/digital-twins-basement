@@ -2,7 +2,7 @@ import { Fragment, type ReactNode, useEffect, useLayoutEffect, useRef, useState 
 import { Html } from '@react-three/drei';
 import type { Group } from 'three';
 import type { GLTF } from 'three/addons/loaders/GLTFLoader.js';
-import { createModelLoader, type ModelLease, type ModelCacheInfo } from '@/twin/modelResources';
+import { createModelLoader, type ModelLease, type ModelCacheInfo } from '@/twin/model/modelResources';
 
 type Props<T> = { url: string; context: T; maxIdle?: number; children?: (scene: Group, context: T, getCacheInfo: () => ModelCacheInfo) => ReactNode };
 type Display<T> = { model: GLTF; lease: ModelLease; context: T; version: number };

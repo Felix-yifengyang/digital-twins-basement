@@ -2,7 +2,7 @@ import { useLayoutEffect, type ReactNode } from 'react';
 import { useBounds } from '@react-three/drei';
 import { useThree } from '@react-three/fiber';
 import { PerspectiveCamera, Vector3, type Group } from 'three';
-import type { SceneSettings } from '@/twin/sceneSettings';
+import type { SceneSettings } from '@/twin/scene/sceneSettings';
 
 type Props = { model: Group; settings: SceneSettings; children: ReactNode };
 

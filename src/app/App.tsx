@@ -1,16 +1,16 @@
 import { lazy, Suspense, useCallback, useState } from 'react';
 import type { Object3D } from 'three';
-import { getModelInfo, type ModelDetails } from '@/twin/leva/getModelInfo';
+import { getModelInfo, type ModelDetails } from '@/twin/panel/getModelInfo';
 import { SceneCanvas } from '@/twin/SceneCanvas';
-import { ModelSelection } from '@/twin/ModelSelection';
-import { SceneSwitcher } from '@/twin/SceneSwitcher';
+import { ModelSelection } from '@/twin/selection/ModelSelection';
+import { SceneSwitcher } from '@/twin/scene/SceneSwitcher';
 import { scenes } from '@/project/scenes';
 
 const SceneControls = import.meta.env.TUNER
-  ? lazy(() => import('@/twin/leva/SceneControls'))
+  ? lazy(() => import('@/twin/panel/SceneControls'))
   : null;
-const PerformanceInfoControls = lazy(() => import('@/twin/leva/PerformanceInfoControls'));
-const LevaPanel = lazy(() => import('@/twin/leva/LevaPanel'));
+const PerformanceInfoControls = lazy(() => import('@/twin/panel/PerformanceInfoControls'));
+const LevaPanel = lazy(() => import('@/twin/panel/LevaPanel'));
 
 export function App() {
   const [details, setDetails] = useState<ModelDetails | null>(null);

@@ -1,5 +1,5 @@
 import { sceneConfig } from '@/project/scene';
-import type { SceneOption } from '@/twin/SceneSwitcher';
+import type { SceneOption } from '@/twin/scene/SceneSwitcher';
 
 // 添加场景时填写独立 GLB 路径；可复用 scene.ts 的可选配置模板。
 export const scenes: [SceneOption, ...SceneOption[]] = [

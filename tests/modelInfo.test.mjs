@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import ts from 'typescript';
 import { Group, Mesh, BoxGeometry, MeshStandardMaterial } from 'three';
-const source = await readFile('src/twin/leva/getModelInfo.ts', 'utf8');
+const source = await readFile('src/twin/panel/getModelInfo.ts', 'utf8');
 const code = ts.transpile(source, { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 })
   .replace(/from ["']([^"']+)["']/g, (_, path) => `from '${import.meta.resolve(path)}'`);
 const { getModelInfo } = await import(`data:text/javascript;base64,${Buffer.from(code).toString('base64')}`);

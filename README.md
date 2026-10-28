@@ -16,6 +16,11 @@ src/
   app/       应用入口、页面壳层和全局样式
   project/   客户场景配置
   twin/      三维运行时
+    SceneCanvas.tsx  场景装配入口
+    scene/           场景配置解析、取景与切换
+    model/           模型加载、缓存与资源释放
+    selection/       对象选择与高亮
+    panel/           Leva 面板、调参与信息提取展示
 public/
   models/    GLB 模型
 ```
@@ -78,11 +83,11 @@ node tests/modelInfo.test.mjs
 
 ## Leva 工具模块
 
-所有 Leva 界面集中在 src/twin/leva/：LevaPanel 管理面板，ModelInfoControls 显示只读模型信息，SceneControls 连接场景调参，getSceneControls 定义灯光、背景和相机的控制项。twin/leva/getModelInfo 只提取对象信息，不依赖 Leva。应用层负责接入，三维核心不导入 Leva 模块。
+所有 Leva 界面集中在 `src/twin/panel/`：LevaPanel 管理面板，ModelInfoControls 显示只读模型信息，SceneControls 连接场景调参，getSceneControls 定义灯光、背景和相机的控制项。`twin/panel/getModelInfo` 只提取对象信息，不依赖 Leva。应用层负责接入，三维核心不导入面板模块。
 
 ## 首次取景与配置模板
 
-`project/scene.ts` 使用 `undefined` 标明可选项并提供示例。底座在 `twin/sceneSettings.ts` 集中合并默认值，灯光强度为 0 时不会被默认值覆盖。
+`project/scene.ts` 使用 `undefined` 标明可选项并提供示例。底座在 `twin/scene/sceneSettings.ts` 集中合并默认值，灯光强度为 0 时不会被默认值覆盖。
 
 没有完整的 `camera.position` 和 `camera.target` 时，GLB 加载完成后通过 Drei Bounds 自动取景，不改变模型坐标或缩放。完整填写两项后使用保存视角；只填写一项会警告并自动取景。FOV、背景和灯光可以分别覆盖。Bounds 根据模型范围调整裁剪面。
 
@@ -108,4 +113,4 @@ Model 负责同一加载器内的有限缓存和资源释放。
 
 Leva 的性能信息分组每 500ms 读取 renderer.info，显示几何体、纹理、着色器程序数量，以及最近一帧的绘制调用和三角形数；这些是数量，不是显存字节数。模型缓存列出加载中、使用中和历史缓存条目。泵站 → 方块 → 鸭子切换后，泵站应退出缓存；多次循环后计数应趋于稳定，不要求归零。PerformanceInfoControls 可从 App 独立移除，资源管理不依赖它。
 
-场景切换入口由 twin/SceneSwitcher.tsx 独立封装，状态、下拉框和样式均由它管理。App 仅传入 scenes 并通过回调获得当前 config；只有一个条目时自动隐藏下拉框。取消切换时可直接向 SceneCanvas 传固定配置，无需修改模型加载或资源管理。
+场景切换入口由 twin/scene/SceneSwitcher.tsx 独立封装，状态、下拉框和样式均由它管理。App 仅传入 scenes 并通过回调获得当前 config；只有一个条目时自动隐藏下拉框。取消切换时可直接向 SceneCanvas 传固定配置，无需修改模型加载或资源管理。

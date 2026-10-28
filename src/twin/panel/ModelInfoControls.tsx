@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { folder, LevaInputs, useControls } from 'leva';
-import type { ModelDetails } from '@/twin/leva/getModelInfo';
+import type { ModelDetails } from '@/twin/panel/getModelInfo';
 
 type Props = {
   details: ModelDetails | null;

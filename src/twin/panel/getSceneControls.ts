@@ -1,4 +1,4 @@
-import type { SceneSettings } from '@/twin/sceneSettings';
+import type { SceneSettings } from '@/twin/scene/sceneSettings';
 
 export function getSceneControls(sceneSettings: SceneSettings) {
   return {
