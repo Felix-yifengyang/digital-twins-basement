@@ -1,6 +1,5 @@
 import { BufferGeometry, Material, Mesh, Skeleton, SkinnedMesh, Texture } from 'three';
 import { GLTFLoader, type GLTF } from 'three/addons/loaders/GLTFLoader.js';
-import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 
 type Resource = BufferGeometry | Material | Texture | Skeleton;
@@ -125,25 +124,6 @@ export function createModelResources(
 }
 
 export function createModelLoader(maxIdle = 1) {
-  const draco = new DRACOLoader().setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.5/');
-  const loader = new GLTFLoader().setDRACOLoader(draco).setMeshoptDecoder(MeshoptDecoder);
-  let pending = 0;
-  let closed = false;
-  const resources = createModelResources(async (url) => {
-    pending++;
-    try { return await loader.loadAsync(url); }
-    finally {
-      pending--;
-      if (closed && !pending) draco.dispose();
-    }
-  }, maxIdle);
-  return {
-    acquire: resources.acquire,
-    getInfo: resources.getInfo,
-    dispose() {
-      closed = true;
-      resources.dispose();
-      if (!pending) draco.dispose();
-    },
-  };
+  const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
+  return createModelResources((url) => loader.loadAsync(url), maxIdle);
 }
