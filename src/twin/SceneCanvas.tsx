@@ -1,11 +1,12 @@
 import { useRef, useState, type ReactNode, type RefObject } from 'react';
-import { OrbitControls } from '@react-three/drei';
+import { Bounds, OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { DirectionalLight, type Group } from 'three';
-import { sceneConfig } from '@/project/scene';
+import { sceneSettings } from '@/twin/sceneSettings';
+import { ModelBounds } from '@/twin/ModelBounds';
 import { Model } from '@/twin/Model';
 
-const modelUrl = `${import.meta.env.BASE_URL}${sceneConfig.modelPath}`;
+const modelUrl = `${import.meta.env.BASE_URL}${sceneSettings.modelPath}`;
 
 export type SceneValues = {
   background: string;
@@ -26,18 +27,26 @@ type Props = {
 
 export function SceneCanvas({ children, renderModel, modelUrl: url = modelUrl }: Props) {
   const [values, setValues] = useState<SceneValues>({
-    background: sceneConfig.background,
-    ...sceneConfig.lighting,
-    position: [...sceneConfig.lighting.position],
+    background: sceneSettings.background,
+    ...sceneSettings.lighting,
+    position: [...sceneSettings.lighting.position],
   });
   const light = useRef<DirectionalLight>(null!);
   return (
-    <Canvas camera={sceneConfig.camera}>
+    <Canvas camera={sceneSettings.camera}>
       <color attach="background" args={[values.background]} />
       <ambientLight intensity={values.ambientIntensity} />
       <directionalLight ref={light} intensity={values.intensity} color={values.color} position={values.position} />
-      <Model url={url}>{renderModel}</Model>
-      <OrbitControls makeDefault target={sceneConfig.controlsTarget} />
+      <Bounds margin={1.2} maxDuration={0}>
+        <Model url={url}>
+          {(model) => (
+            <ModelBounds model={model} autoFit={!sceneSettings.customView || url !== modelUrl}>
+              {renderModel ? renderModel(model) : <primitive object={model} />}
+            </ModelBounds>
+          )}
+        </Model>
+      </Bounds>
+      <OrbitControls makeDefault target={sceneSettings.target} />
       {children?.({ light, onChange: setValues })}
     </Canvas>
   );

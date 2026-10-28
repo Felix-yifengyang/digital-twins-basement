@@ -23,8 +23,11 @@ export default function SceneControls({ light, onChange }: Props) {
       const roundPosition = (position: readonly number[]) => position.map((value) => Math.round(value * 10) / 10);
       const config = {
         ...sceneConfig,
-        camera: { position: roundPosition(camera.position.toArray()), fov: read('fov') },
-        controlsTarget: roundPosition(controls.target.toArray()),
+        camera: {
+          position: roundPosition(camera.position.toArray()),
+          target: roundPosition(controls.target.toArray()),
+          fov: read('fov'),
+        },
         background: read('background'),
         lighting: {
           ambientIntensity: read('ambientIntensity'),

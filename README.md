@@ -79,3 +79,13 @@ node tests/modelInfo.test.mjs
 ## Leva 工具模块
 
 所有 Leva 界面集中在 src/twin/leva/：LevaPanel 管理面板，ModelInfoControls 显示只读模型信息，SceneControls 连接场景调参，getSceneControls 定义灯光、背景和相机的控制项。twin/leva/getModelInfo 只提取对象信息，不依赖 Leva。应用层负责接入，三维核心不导入 Leva 模块。
+
+## 首次取景与配置模板
+
+`project/scene.ts` 使用 `undefined` 标明可选项并提供示例。底座在 `twin/sceneSettings.ts` 集中合并默认值，灯光强度为 0 时不会被默认值覆盖。
+
+没有完整的 `camera.position` 和 `camera.target` 时，GLB 加载完成后通过 Drei Bounds 自动取景，不改变模型坐标或缩放。完整填写两项后使用保存视角；只填写一项会警告并自动取景。FOV、背景和灯光可以分别覆盖。Bounds 根据模型范围调整裁剪面。
+
+Leva 使用合并后的参数初始化；复制配置读取实际相机位置和观察目标，输出 camera.position、camera.target。将结果替换 scene.ts 的 sceneConfig 声明即可，保留顶部 SceneConfig 类型定义。没有自动写入源码文件。
+
+换成其他 modelUrl 时自动取景，避免沿用默认 GLB 的保存视角。自动取景在模型挂载时执行，不因普通参数更新反复重置。
