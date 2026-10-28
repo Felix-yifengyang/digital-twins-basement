@@ -1,0 +1,12 @@
+.twin-label {
+  box-sizing: border-box;
+  width: max-content;
+  max-width: min(260px, calc(100vw - 32px));
+  padding: 6px 10px;
+  border-radius: 4px;
+  color: #fff;
+  background: #202428;
+  font: 14px/1.5 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  overflow-wrap: anywhere;
+  user-select: none;
+}
